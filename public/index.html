@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Braindump</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router/dist/vue-router.js"></script>
+    <!-- unpkg contains all npm stuff https://medium.com/@jamesweee/using-vue-js-single-file-component-without-module-bundlers-aea58d892ad9 --> 
+    <!-- allows to use .vue single-file-component without webpack/npm -->
+    <script src="https://unpkg.com/http-vue-loader"></script>
+
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+-->
+    <script src="https://kit.fontawesome.com/a5f57406c5.js" crossorigin="anonymous"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.4/trix.min.js" integrity="sha512-8iE6dgykdask8wKpgxYbLCJMwoXudIVsYbzVk8qD7OUiaBzFLtfpmT5N6L5E1uT3j2Qjz2ynZCfDdrmAJzMkVg==" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.4/trix.min.css" integrity="sha512-sC2S9lQxuqpjeJeom8VeDu/jUJrVfJM7pJJVuH9bqrZZYqGe7VhTASUb3doXVk6WtjD0O4DTS+xBx2Zpr1vRvg==" crossorigin="anonymous" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment-with-locales.min.js" integrity="sha512-qSnlnyh7EcD3vTqRoSP4LYsy2yVuqqmnkM9tW4dWo6xvAoxuVXyM36qZK54fyCmHoY1iKi9FJAUZrlPqmGNXFw==" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="/style/layout.css" />
+    <link rel="stylesheet" href="/style/style.css" />
+    
+</head>
+<body>
+    <script type="module" id="main">
+
+        import resource from './helpers/resource.js';
+        import notebookList from './components/notebook-list.js';
+        import notebookListItem from './components/notebook-list-item.js';
+        import noteBookHeader from './components/notebook-header.js';
+        import noteListItem from './components/note-list-item.js';
+
+        import { notificationList } from './components/notification-list.js';
+
+        import navigationBar from './components/navigation-bar.js';
+        import createNotebookModal from './components/create-notebook-modal.js';
+        import settingsModal from './components/settings-modal.js';
+        import { confirmationModalComponent } from './components/confirmation-modal.js';
+        import router from './app/router.js';
+
+        Vue.component('notebook-list', notebookList);
+        Vue.component('notebook-list-item', notebookListItem);
+        Vue.component('note-list-item', noteListItem);
+        Vue.component('navigation-bar', navigationBar);
+        Vue.component('notebook-header', noteBookHeader);
+        Vue.component('notification-list', notificationList);
+        Vue.component('create-notebook-modal', createNotebookModal);
+        Vue.component('settings-modal', settingsModal);
+        Vue.component('confirmation-modal', confirmationModalComponent);
+
+        // App
+        const app = new Vue({
+            data: {
+                // still needed? 
+                notebook: { title: '' },
+                note: { title: null, content: null },
+                refNote: { title: null, content: null },
+            },
+            computed: {
+                dirty() {
+                    //console.log(this.note.title, this.refNote.title);
+                    //console.log(this.note.content, this.refNote.content);
+                    return !(this.note.title == this.refNote.title && this.note.content == this.refNote.content);
+                }
+            },
+            methods: {
+                setNote(data) {
+                    this.note = data;
+                    this.refNote = {...data};
+                },
+                clean() {
+                    this.note = { title: null, content: null };
+                    this.refNote = { title: null, content: null };
+                }
+            },
+            router: router,
+            el: '#app'
+        }).$mount('#app')
+
+    </script>
+
+    <div id="app">
+        <navigation-bar></navigation-bar>
+        <div id="container">
+            <notebook-list></notebook-list>
+            <router-view></router-view>
+        </div>
+        <notification-list></notification-list>
+        <create-notebook-modal v-bind:notebook="notebook"></create-notebook-modal>
+        <settings-modal></settings-modal>
+        <confirmation-modal></confirmation-modal>
+    </div>
+
+</body>
+</html>

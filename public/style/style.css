@@ -1,0 +1,73 @@
+/* Styling and finetuning */
+
+div#notebooks .list-group-item {
+    font-size: .75rem;
+}
+
+time {
+    font-size: .75rem;
+    color: grey;
+}
+
+a.list-group-item, a:hover.list-group-item { color: black; text-decoration: none; }
+
+a:hover.list-group-item:not(.braindumpActive) { background-color: #eeeeee; } 
+
+.braindumpActive {
+    background-color: rgba(52, 95, 235, .1);
+    border-color: rgba(52, 95, 235, .1);
+}
+
+.braindumpActive * {
+    /*color: #ffffff;*/
+}
+
+.card, .card>.list-group:last-child {
+    border-radius: 0;
+}
+
+.badge {
+    font-size: .75rem;
+    /*margin-top: .10rem;*/
+}
+
+.empty {
+    font-size: .75rem;
+    text-align: center;
+}
+
+#title {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: -1px .75rem -3px 0;
+    width: 100%;
+}
+
+div.card-header button {
+    margin: -10px 0;
+}
+
+/* Note styling */
+
+pre {
+    border: 1px solid grey;
+    border-radius: .25rem;
+    background-color: #eeeeee; 
+    padding: .75rem;
+}
+
+/* Theming */
+
+.bg-braindump {
+    background-color: #345feb;
+}
+
+.btn-braindump {
+    background-color: #345feb;
+    border-color: #345feb;    
+}
+
+div.alert {
+    box-shadow: 2px 2px 4px grey;
+}

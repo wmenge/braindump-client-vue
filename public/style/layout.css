@@ -1,0 +1,84 @@
+/* Layout */
+
+html, body {margin: 0; height: 100%; overflow: hidden}
+
+div#notebooks {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    width: 225px;
+    border-right: none;
+}
+
+div#notes {
+    position: fixed;
+    top: 056px;
+    left: 225px;
+    bottom: 0;
+    width: 280px;
+    border-right: none;
+}
+
+div#note {
+    position: fixed;
+    top: 56px;
+    left: 505px;
+    right: 0;
+    bottom: 0;
+    border-right: none;
+    z-index: 0;
+}
+
+div#notebooks .list-group, div#notes .list-group {
+    overflow-y: scroll; 
+}
+
+div#note .card-body {
+    -webkit-flex: 1;
+    flex: 1;
+
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+}
+
+trix-editor {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: scroll;
+}
+
+div#search {
+    margin-left: 78px;
+}
+
+div#search input {
+    width: 230px;
+}
+
+div#notification-area {
+    padding: 1rem;
+    width: 40rem;
+    position: absolute;
+    right: 0;
+    top: 0;
+    overflow-y: scroll;
+    max-height: 100%;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+div.alert {
+    width: 100%;
+    pointer-events: all;
+}
+/* Vue transitions (used for notifications, modals use jquery/bootstrap animations */
+
+.list-enter-active, .list-leave-active {
+  transition: all .45s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
