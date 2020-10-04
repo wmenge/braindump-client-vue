@@ -20,20 +20,11 @@ const noteDetail = {
     },
     mounted: function() {
         document.addEventListener("trix-change", this.setBody);
-    
-        this._keyListener = function(e) {
-            if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
-                e.preventDefault(); // present "Save Page" from getting triggered.
-                this.saveNote();
-            }
-
-        };
-
-        document.addEventListener('keydown', this._keyListener.bind(this));
+        document.addEventListener('keydown', this.keyListener);
     },
     beforeDestroy() {
         document.removeEventListener("trix-change", this.setBody);
-        document.removeEventListener('keydown', this._keyListener);
+        document.removeEventListener('keydown', this.keyListener);
     },
     computed: {
         newUrl() {
@@ -87,6 +78,13 @@ const noteDetail = {
                 () => { noteResource.delete(this.note); }, // resolved
                 () => { /* no action */ },                 // rejected
             );
+        },
+        keyListener(e) {
+            if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault(); // present "Save Page" from getting triggered.
+                console.log("save triggered!!")
+                this.saveNote();
+            }
         }
     },
     template: 
