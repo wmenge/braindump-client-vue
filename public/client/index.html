@@ -29,68 +29,24 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment-with-locales.min.js" integrity="sha512-qSnlnyh7EcD3vTqRoSP4LYsy2yVuqqmnkM9tW4dWo6xvAoxuVXyM36qZK54fyCmHoY1iKi9FJAUZrlPqmGNXFw==" crossorigin="anonymous"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/vue-progressbar@0.7.5/dist/vue-progressbar.min.js" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="/style/layout.css" />
     <link rel="stylesheet" href="/style/style.css" />
     
 </head>
 <body>
     <script type="module" id="main">
+        import app from '../app/app.js';
+        import NotificationBus from '../app/notification-bus.js';
 
-        import resource from './helpers/resource.js';
-        import notebookList from './components/notebook-list.js';
-        import notebookListItem from './components/notebook-list-item.js';
-        import noteBookHeader from './components/notebook-header.js';
-        import noteListItem from './components/note-list-item.js';
-
-        import { notificationList } from './components/notification-list.js';
-
-        import navigationBar from './components/navigation-bar.js';
-        import createNotebookModal from './components/create-notebook-modal.js';
-        import settingsModal from './components/settings-modal.js';
-        import { confirmationModalComponent } from './components/confirmation-modal.js';
-        import router from './app/router.js';
-
-        Vue.component('notebook-list', notebookList);
-        Vue.component('notebook-list-item', notebookListItem);
-        Vue.component('note-list-item', noteListItem);
-        Vue.component('navigation-bar', navigationBar);
-        Vue.component('notebook-header', noteBookHeader);
-        Vue.component('notification-list', notificationList);
-        Vue.component('create-notebook-modal', createNotebookModal);
-        Vue.component('settings-modal', settingsModal);
-        Vue.component('confirmation-modal', confirmationModalComponent);
-
-        // App
-        const app = new Vue({
-            data: {
-                // still needed? 
-                notebook: { title: '' },
-                note: { title: null, content: null },
-                refNote: { title: null, content: null },
-            },
-            computed: {
-                dirty() {
-                    //console.log(this.note.title, this.refNote.title);
-                    //console.log(this.note.content, this.refNote.content);
-                    return !(this.note.title == this.refNote.title && this.note.content == this.refNote.content);
-                }
-            },
-            methods: {
-                setNote(data) {
-                    this.note = data;
-                    this.refNote = {...data};
-                },
-                clean() {
-                    this.note = { title: null, content: null };
-                    this.refNote = { title: null, content: null };
-                }
-            },
-            router: router,
-            el: '#app'
-        }).$mount('#app')
-
+        app.$mount('#app');
+        NotificationBus.$mount('#notication-area');
     </script>
 
+    <div id="notication-area">
+        <vue-progress-bar></vue-progress-bar>
+    </div>
     <div id="app">
         <navigation-bar></navigation-bar>
         <div id="container">
