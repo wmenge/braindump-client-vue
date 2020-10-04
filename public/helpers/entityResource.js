@@ -1,6 +1,7 @@
 import resource from '../helpers/resource.js'
 import { EventBus } from '../app/event-bus.js';
 import queryString from '../helpers/queryString.js'
+import NotificationBus from '../app/notification-bus.js';
 
 const endpoints ={
     notebooks: "/notebooks",
@@ -8,13 +9,30 @@ const endpoints ={
 }
 
 function localSave(endpoint, resourceName, object) {
+    NotificationBus.$Progress.start();
     if (object.id) {
         const promise = resource.put(`${endpoint}/${object.id}`, object);
-        promise.then(data => { EventBus.$emit(`${resourceName}-updated`, data); });
+        promise.then(
+            data => { 
+                NotificationBus.$Progress.finish();
+                EventBus.$emit(`${resourceName}-updated`, data); 
+            },
+            reasons => {
+                NotificationBus.$Progress.fail();
+            }
+        );
         return promise;
     } else {
         const promise = resource.post(endpoint, object);
-        promise.then(data => { EventBus.$emit(`${resourceName}-created`, data); });
+        promise.then(
+            data => { 
+                NotificationBus.$Progress.finish();
+                EventBus.$emit(`${resourceName}-created`, data);
+            },
+            reasons => {
+                NotificationBus.$Progress.fail();
+            }
+        );
         return promise;
     }
 }
