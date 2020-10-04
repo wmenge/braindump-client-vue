@@ -69,7 +69,6 @@ const noteDetail = {
             noteResource.save(this.note).then(data => {
                 // bind data to root controller so we can do a dirty check in the router
                 this.$root.setNote(data);
-                notificationHelper.success("Yay! Your note has been saved");    
             });
             
         },
