@@ -16,8 +16,7 @@ var resource = {
         return this.fetch(resource, "DELETE", null);
     },
     fetch(resource, method, body) {
-        console.log(resource, method, body);
-        //console.trace();
+        console.debug(resource, method, body);
         return fetch(configuration.apiUrl + resource, {
             "headers": this.headers(body),
             "method": method,
