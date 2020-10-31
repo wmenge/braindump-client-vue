@@ -1,0 +1,19 @@
+{
+  "name": "braindump-client-vue",
+  "version": "1.0.0",
+  "description": "Vue Based Braindump client",
+  "main": "index.js",
+  "repository": "git@github.com:wmenge/braindump-client-vue.git",
+  "author": "wilco menge <wilcomenge@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "bootstrap": "^4.5.3",
+    "jquery": "^3.5.1",
+    "moment": "^2.29.1",
+    "trix": "^1.3.0",
+    "vue": "^2.6.12",
+    "vue-progressbar": "^0.7.5",
+    "vue-router": "^3.4.8"
+  }
+}

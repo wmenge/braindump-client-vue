@@ -1,4 +1,5 @@
 import queryString from '../helpers/queryString.js'
+import moment from '../lib/moment/dist/moment.js';
 
 var NoteListItem = {
     props: ['note'],
