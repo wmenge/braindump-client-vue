@@ -6,10 +6,37 @@ import { noteResource } from '../helpers/entityResource.js'
 // Routes
 const routes = [
     {
+        path: '/notes', 
+        component: noteList,
+        props: true,
+        children: [
+            {
+                path: '',
+                component: noteDetailComponent,
+                props: true
+            },
+            {
+                path: 'new',
+                component: noteDetailComponent,
+                props: true
+            },
+            {
+                path: ':note_id',
+                component: noteDetailComponent,
+                props: true
+            }
+        ]
+    },
+    {
         path: '/notebooks/:notebook_id/notes', 
         component: noteList,
         props: true,
         children: [
+            {
+                path: '',
+                component: noteDetailComponent,
+                props: true
+            },
             {
                 path: 'new',
                 component: noteDetailComponent,
