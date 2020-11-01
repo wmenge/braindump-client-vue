@@ -11,6 +11,7 @@
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
+    "popper.js": "^1.16.1",
     "trix": "^1.3.0",
     "vue": "^2.6.12",
     "vue-progressbar": "^0.7.5",
