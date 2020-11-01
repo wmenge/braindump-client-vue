@@ -2,12 +2,10 @@ import { EventBus } from '../app/event-bus.js';
 import queryString from '../helpers/queryString.js'
 
 var notebookListItem = {
-    props: ['notebook'],
+    props: ['notebook', 'count'],
     computed: {
         url: function() {
-            // remove search from querystring: when changing notebook we want to reset search
-            delete this.$route.query.q;
-            return `/notebooks/${this.notebook.id}/notes${queryString(this.$route.query)}`;
+            return this.notebook.id ? `/notebooks/${this.notebook.id}/notes${queryString(this.$route.query)}` : '/notes';
         },
         isActive() {
             return (this.notebook.id == this.$route.params.notebook_id);
@@ -21,7 +19,7 @@ var notebookListItem = {
     template: `
         <router-link v-bind:to="url" v-on:click.native="select" class="list-group-item" v-bind:class="{ braindumpActive: isActive }">
             <div class="float-left" style="max-width: 165px;">{{notebook.title}}</div>
-            <span class="badge badge-primary bg-braindump float-right">{{notebook.noteCount}}</span>
+            <span class="badge badge-primary bg-braindump float-right">{{count ? count :notebook.noteCount}}</span>
         </router-link>`
 };
 

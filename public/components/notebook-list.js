@@ -7,6 +7,7 @@ var notebookList = {
 	data() {
 	    return {
 	        notebooks: null,
+	        allNotes: { title: "All notes" }
 	    }
 	},
 	created() {
@@ -38,23 +39,22 @@ var notebookList = {
             this.selectFirst();
         });
 	},
+	computed: {
+        sortedNotebooks() {
+        	return this.notebooks ? this.notebooks.sort((a, b) => a.title.localeCompare(b.title, undefined, {sensitivity: 'base'})) : null;
+        },
+        totalNoteCount() {
+        	return (!this.notebooks) ? 0 : this.notebooks.reduce(function(a, b) {
+	            return a + b.noteCount;
+	        }, 0);
+        }
+    },
 	methods: {
 	    async fetchData() {
-	    	this.notebooks = await notebookResource.getAll();
+	    	this.notebooks = await notebookResource.getAll({ sort: 'title' });
 	    	if (this.notebooks.length > 0 && !this.$route.params.notebook_id) {
 	    		this.selectFirst();
-				//let query = {...this.$route.query}
-				//query.sort = 'updated';
-        		//this.$router.push(`/notebooks/${this.notebooks[0].id}/notes${queryString(query)}`);
-        	}
-	        /*resource.get("/notebooks").then(data => { 
-	        	this.notebooks = data; 
-	        	if (this.notebooks.length > 0 && !this.$route.params.notebook_id) {
-					let query = {...this.$route.query}
-					query.sort = 'updated';
-	        		this.$router.push(`/notebooks/${this.notebooks[0].id}/notes${queryString(query)}`);
-	        	}
-	        });*/
+			}
 	    },
 	    createNotebook() {
 	    	// TODO: need vuex to manage some global state
@@ -62,10 +62,7 @@ var notebookList = {
 	    	$("#notebookModal").modal("show");
 	    },
 	    selectFirst() {
-    		let query = {...this.$route.query}
-			query.sort = 'updated';
-    		this.$router.push(`/notebooks/${this.notebooks[0].id}/notes${queryString(query)}`);
-    		EventBus.$emit('notebook-selected', {...this.notebooks[0]});
+	    	this.$router.push(`/notes${queryString(this.$route.query)}`);
 	    }
 	},
 	template: `
@@ -77,8 +74,10 @@ var notebookList = {
 	            </div>
 	        </div>
 	        <div class="list-group list-group-flush">
+	        	<notebook-list-item v-bind:notebook="allNotes" v-bind:count="totalNoteCount"
+	            />
 	            <notebook-list-item
-	              v-for="notebook in notebooks"
+	              v-for="notebook in sortedNotebooks"
 	              v-bind:key="notebook.id"
 	              v-bind:notebook="notebook"
 	            />

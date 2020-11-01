@@ -55,7 +55,10 @@ var NoteList = {
     methods: {
         // TODO: Get data in router (before nav)
         async fetchData() {
-            let notes = await noteResource.getFor(this.notebook_id, this.$route.query);//.then(data => {
+            let notes = this.notebook_id ? 
+                await noteResource.getFor(this.notebook_id, this.$route.query) :
+                await noteResource.getAll(this.$route.query);
+
             this.notes = notes;
             
             if (!this.$route.params.note_id && !this.$route.path.includes('/new')) {
@@ -64,10 +67,12 @@ var NoteList = {
         },
         selectFirstOrNew() {
             //if (!this.$route.params.note_id && !this.$route.path.includes('/new')) {
+
+                let notebookPart = this.$route.params.notebook_id ? `/notebooks/${this.$route.params.notebook_id}` : '';
                 if (this.notes.length > 0) {
-                    this.$router.push(`/notebooks/${this.$route.params.notebook_id}/notes/${this.notes[0].id}${queryString(this.$route.query)}`);
+                    this.$router.push(`${notebookPart}/notes/${this.notes[0].id}${queryString(this.$route.query)}`);
                 } else {
-                    this.$router.push(`/notebooks/${this.$route.params.notebook_id}/notes/new${queryString(this.$route.query)}`);
+                    this.$router.push(`${notebookPart}/notes/new${queryString(this.$route.query)}`);
                 }
             //}
         }

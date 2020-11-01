@@ -47,8 +47,8 @@ const notebookResource = {
 	createNew() {
 		return { title: "" };
 	},
-	getAll() {
-		return resource.get("/notebooks");
+	getAll(query) {
+		return resource.get(`/notebooks${queryString(query)}`);
 	},
     get(id) {
         return resource.get(`/notebooks/${id}`);
@@ -65,8 +65,8 @@ const noteResource = {
     createNew(notebook_id) {
         return { title: null, type: "HTML", content: null, notebook_id: notebook_id };
     },
-    getAll() {
-        return resource.get("/notes");
+    getAll(query) {
+        return resource.get(`/notes${queryString(query)}`);
     },
     getFor(notebook_id, query) {
         return resource.get(`/notebooks/${notebook_id}/notes${queryString(query)}`)

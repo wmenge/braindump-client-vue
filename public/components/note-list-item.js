@@ -5,7 +5,9 @@ var NoteListItem = {
     props: ['note'],
     computed: {
         url: function() {
-            return `/notebooks/${this.note.notebook_id}/notes/${this.note.id}${queryString(this.$route.query)}`;
+            return ((this.$route.params.notebook_id) ?
+                `/notebooks/${this.$route.params.notebook_id}` :
+                '') + `/notes/${this.note.id}${queryString(this.$route.query)}`;
         },
         isActive() {
             return (this.note.id == this.$route.params.note_id);
