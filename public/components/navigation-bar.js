@@ -2,6 +2,7 @@ import resource from '../helpers/resource.js'
 import queryString from '../helpers/queryString.js'
 import { notificationHelper } from './notification-list.js'
 import configuration from '../config.js'
+import { EventBus } from '../app/event-bus.js';
 
 const NavigationBar = {
     data() {
@@ -16,6 +17,12 @@ const NavigationBar = {
         if (this.$route.query.q) {
             this.searchQuery = this.$route.query.q;
         }
+
+        EventBus.$on('notebook-selected', newNote => {
+            delete this.$route.query.q;
+            this.searchQuery = "";
+        });
+        
         resource.get('/user').then(data => this.user = data);
     },
     computed: {
