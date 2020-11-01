@@ -13,6 +13,7 @@ const noteDetail = {
     created () {
         // fetch the data when the view is created and the data is
         // already being observed
+``
         this.fetchOrCreateNote();
     },
     watch: {
@@ -81,7 +82,6 @@ const noteDetail = {
         keyListener(e) {
             if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault(); // present "Save Page" from getting triggered.
-                console.log("save triggered!!")
                 this.saveNote();
             }
         }
