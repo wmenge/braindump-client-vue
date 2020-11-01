@@ -22,6 +22,10 @@ Vue.component('create-notebook-modal', createNotebookModal);
 Vue.component('settings-modal', settingsModal);
 Vue.component('confirmation-modal', confirmationModalComponent);
 
+function equalsIgnoreEmpty(a, b) {
+    return a == b || (!a && !b);
+}
+
 // App
 let app = new Vue({
     data: {
@@ -32,9 +36,7 @@ let app = new Vue({
     },
     computed: {
         dirty() {
-            //console.log(this.note.title, this.refNote.title);
-            //console.log(this.note.content, this.refNote.content);
-            return !(this.note.title == this.refNote.title && this.note.content == this.refNote.content);
+            return !(equalsIgnoreEmpty(this.note.title, this.refNote.title) && equalsIgnoreEmpty(this.note.content, this.refNote.content));
         }
     },
     methods: {
