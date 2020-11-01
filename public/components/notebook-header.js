@@ -40,6 +40,9 @@ var NotebookHeader = {
             let query = {...this.$route.query}
             query.sort = '-title';
             return this.$route.path + queryString(query);
+        },
+        buttonDisabled() {
+            return !this.$route.params.notebook_id;
         }
     },
     methods: {
@@ -75,8 +78,8 @@ var NotebookHeader = {
                         <router-link v-bind:to="sortTitleAsc" class="dropdown-item">Sort by title (a..z)</router-link>
                         <router-link v-bind:to="sortTitleDesc" class="dropdown-item">Sort by title (z..a)</router-link>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" v-on:click="changeNotebook" href="#">Change Title</a>
-                        <a class="dropdown-item" data-toggle="modal" v-on:click="deleteNotebook">Delete notebook</a>
+                        <a class="dropdown-item" v-on:click="changeNotebook" href="#" v-bind:class="{ disabled: buttonDisabled }"">Change Title</a>
+                        <a class="dropdown-item" data-toggle="modal" v-on:click="deleteNotebook" v-bind:class="{ disabled: buttonDisabled }">Delete notebook</a>
                     </div>
                 </div>
             </div>

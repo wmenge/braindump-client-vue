@@ -24,6 +24,9 @@ const NavigationBar = {
         },
         logoutUrl() {
             return configuration.logoutUrl;
+        },
+        creationDisabled() {
+            return !this.$route.params.notebook_id;
         }
     },
     methods: {
@@ -47,7 +50,7 @@ const NavigationBar = {
                             </div>
                         </div>
                     </form>
-                    <router-link v-bind:to="newUrl" class="btn btn-outline-light my-2 my-sm-0"><i class="fa fa-plus"></i> Add note</router-link>
+                    <router-link v-bind:to="newUrl" class="btn btn-outline-light my-2 my-sm-0" v-bind:class="{ disabled: creationDisabled }"><i class="fa fa-plus"></i> Add note</router-link>
                 </div>
 
                 <ul v-if="user" class="navbar-nav ml-auto">
