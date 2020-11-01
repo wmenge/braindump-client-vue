@@ -17,7 +17,7 @@ var resource = {
     },
     fetch(resource, method, body) {
         console.debug(resource, method, body);
-        return fetch(configuration.apiUrl + resource, {
+        return fetch(configuration.baseUrl + configuration.apiUrl + resource, {
             "headers": this.headers(body),
             "method": method,
             "body": ((body == null) ? null : JSON.stringify(body)),
@@ -27,7 +27,7 @@ var resource = {
             response => {
                 // todo: move to separate event handler
                 if(response.status==401) {
-                    window.location = configuration.loginUrl;
+                    window.location = configuration.baseUrl + configuration.loginUrl;
                     let rejectedPromise = new Promise(function(res, rej) { rej(); });
                     //rejectedPromise.reject();
                     return rejectedPromise;

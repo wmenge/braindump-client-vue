@@ -30,7 +30,10 @@ const NavigationBar = {
             return `/notebooks/${this.$route.params.notebook_id}/notes/new${queryString(this.$route.query)}`;
         },
         logoutUrl() {
-            return configuration.logoutUrl;
+            return configuration.baseUrl + configuration.logoutUrl;
+        },
+        adminUrl() {
+            return configuration.baseUrl + configuration.adminUrl;
         },
         creationDisabled() {
             return !this.$route.params.notebook_id;
@@ -65,7 +68,8 @@ const NavigationBar = {
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>{{user.name}}</a>
                         <div class="dropdown-menu" aria-labelledby="dropdown01">
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingsModal">Settings</a>
-                        <a class="dropdown-item" v-bind:href="logoutUrl">Logout</a>
+                        <a v-if="user.isAdministrator" class="dropdown-item" v-bind:href="adminUrl" target="_blank">Admin panel</a>
+                        <a class="dropdown-item" v-bind:href="adminUrl">Logout</a>
                     </div>
                     </li>
                 </ul>
