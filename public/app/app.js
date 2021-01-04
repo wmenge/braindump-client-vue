@@ -23,7 +23,8 @@ Vue.component('settings-modal', settingsModal);
 Vue.component('confirmation-modal', confirmationModalComponent);
 
 function equalsIgnoreEmpty(a, b) {
-    return a == b || (!a && !b);
+    if (a == null || b == null) return true;
+    return a.replace('&nbsp;', '') == b.replace('&nbsp;', '') || (!a && !b);
 }
 
 // App
