@@ -1,3 +1,4 @@
 *.sublime-project
 *.sublime-workspace
 config.js
+public/lib/*
