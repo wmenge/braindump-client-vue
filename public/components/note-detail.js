@@ -30,6 +30,9 @@ const noteDetail = {
     computed: {
         newUrl() {
             return `/notebooks/${this.$route.params.notebook_id}/notes/new${queryString(this.$route.query)}`;
+        },
+        dirty() {
+            return this.$root.dirty;
         }
     },
     methods: {
@@ -45,33 +48,34 @@ const noteDetail = {
                 this.$refs.trix.editor.loadHTML(this.note.content);
             }
         },
+        prepareNote(data) {
+            // Bad hack: backend insists on saving <br> has <br />, while 
+            // trix editor insists on saving <br /> as <br>. 
+            // This disagreement causes problems in the dirty check
+            // prevent this by modifying data.content
+            // (TODO: Move to resource, or some filter or perhaps in filter in backend)
+            data.content = data.content.replaceAll("<br />", "<br>");
+
+            this.note = data;
+            
+            if (this.$refs.trix) {
+                var originalPosition = this.$refs.trix.editor.getPosition();
+                this.$refs.trix.editor.loadHTML(this.note.content);
+                // retain cursor position
+                this.$refs.trix.editor.setSelectedRange(originalPosition);
+            }
+
+            // bind data to root controller so we can do a dirty check in the router
+            this.$root.setNote(data);
+        },
         fetchNote() {
-            noteResource.get(this.note_id).then(data => { 
-
-                // Bad hack: backend insists on saving <br> has <br />, while 
-                // trix editor insists on saving <br /> as <br>. 
-                // This disagreement causes problems in the dirty check
-                // prevent this by modifying data.content
-                // (TODO: Move to resource, or some filter or perhaps in filter in backend)
-                data.content = data.content.replaceAll("<br />", "<br>");
-
-                this.note = data;
-                // bind data to root controller so we can do a dirty check in the router
-                this.$root.setNote(data);
-                if (this.$refs.trix) {
-                    this.$refs.trix.editor.loadHTML(this.note.content);
-                }
-            });
+            noteResource.get(this.note_id).then(data => this.prepareNote(data));
         },
         setBody(e) {
-            this.note.content = document.getElementById('x').value;
+            this.note.content = document.getElementById('hiddenContent').value;
         },
         saveNote() {
-            noteResource.save(this.note).then(data => {
-                // bind data to root controller so we can do a dirty check in the router
-                this.$root.setNote(data);
-            });
-            
+            noteResource.save(this.note).then(data => this.prepareNote(data));
         },
         deleteNote() {
             confirm("Are you sure you want to delete this note?").then(
@@ -82,7 +86,7 @@ const noteDetail = {
         keyListener(e) {
             if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault(); // present "Save Page" from getting triggered.
-                this.saveNote();
+                if (this.dirty) this.saveNote();
             }
         }
     },
@@ -90,15 +94,15 @@ const noteDetail = {
         `<div v-if="note" class="card" id="note">
             <div class="card-header d-flex">
                 <input type="text" id="title" placeholder="Give your note a title" v-model="note.title">
-                <div><button v-on:click="saveNote" class="btn btn-dark btn-braindump btn-sm"><i class="fa fa-save"></i></button></div>&nbsp;
+                <div><button :disabled='!dirty' v-on:click="saveNote" class="btn btn-dark btn-braindump btn-sm"><i class="fa fa-save"></i></button></div>&nbsp;
                 <div><button v-on:click="deleteNote" class="btn btn-dark btn-braindump btn-sm"><i class="fa fa-trash"></i></button></div>
             </div>
             <div class="card-body">
                     <div class="form-group">
                         <input type="url" class="form-control" id="url" v-model="note.url" placeholder="Add a link here if relevant">
                     </div>
-                    <input id="x" type="hidden" name="content" v-model="note.content">
-                    <trix-editor ref="trix" input="x"></trix-editor>
+                    <input id="hiddenContent" type="hidden" name="content" v-model="note.content">
+                    <trix-editor ref="trix" input="hiddenContent"></trix-editor>
             </div>
          </div>`
 }
