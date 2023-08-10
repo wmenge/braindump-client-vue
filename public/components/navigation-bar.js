@@ -65,7 +65,7 @@ const NavigationBar = {
 
                 <ul v-if="user" class="navbar-nav ml-auto">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>{{user.name}}</a>
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>&nbsp;{{user.name}}</a>
                         <div class="dropdown-menu" aria-labelledby="dropdown01">
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#settingsModal">Settings</a>
                         <a v-if="user.isAdministrator" class="dropdown-item" v-bind:href="adminUrl" target="_blank">Admin panel</a>
