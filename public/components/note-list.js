@@ -55,6 +55,8 @@ var NoteList = {
     methods: {
         // TODO: Get data in router (before nav)
         async fetchData() {
+            if (!this.$route.query.sort) this.$route.query.sort = '-updated';
+
             let notes = this.notebook_id ? 
                 await noteResource.getFor(this.notebook_id, this.$route.query) :
                 await noteResource.getAll(this.$route.query);
