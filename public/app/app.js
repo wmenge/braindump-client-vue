@@ -36,8 +36,14 @@ let app = new Vue({
         refNote: { title: null, content: null },
     },
     computed: {
+        new() {
+            return !this.note.id && this.note.title;
+        },
+        modified() {
+            return (!(equalsIgnoreEmpty(this.note.title, this.refNote.title) && equalsIgnoreEmpty(this.note.content, this.refNote.content)));
+        },
         dirty() {
-            return !(equalsIgnoreEmpty(this.note.title, this.refNote.title) && equalsIgnoreEmpty(this.note.content, this.refNote.content));
+            return this.new || this.modified;
         }
     },
     methods: {
