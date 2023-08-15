@@ -7,14 +7,14 @@
   "author": "wilco menge <wilcomenge@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
-    "bootstrap": "^4.5.3",
-    "jquery": "^3.5.1",
-    "moment": "^2.29.1",
+    "@fortawesome/fontawesome-free": "^6.4",
+    "bootstrap": "^4.6",
+    "jquery": "^3.7",
+    "moment": "^2.29",
     "popper.js": "^1.16.1",
-    "trix": "^1.3.0",
-    "vue": "^2.6.12",
+    "trix": "^2.0",
+    "vue": "^2.7",
     "vue-progressbar": "^0.7.5",
-    "vue-router": "^3.4.8"
+    "vue-router": "^3.6"
   }
 }

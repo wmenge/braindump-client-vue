@@ -63,7 +63,7 @@ const notebookResource = {
 
 const noteResource = {
     createNew(notebook_id) {
-        return { title: null, type: "HTML", content: null, notebook_id: notebook_id };
+        return { title: null, type: "HTML", content: "", notebook_id: notebook_id };
     },
     getAll(query) {
         return resource.get(`/notes${queryString(query)}`);
