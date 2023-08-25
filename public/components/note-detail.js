@@ -4,6 +4,7 @@ import { confirm } from '../components/confirmation-modal.js';
 import { notificationHelper } from './notification-list.js'
 
 const noteDetail = {
+    timeout: null,
     props: ['notebook_id', 'note_id'],
     data() {
         return {
@@ -18,6 +19,9 @@ const noteDetail = {
     },
     watch: {
         'note_id': 'fetchOrCreateNote',
+        'note.title': 'debounceAutoSave',
+        'note.content': 'debounceAutoSave',
+        'note.url': 'debounceAutoSave'
     },
     mounted: function() {
         document.addEventListener("trix-change", this.setBody);
@@ -36,7 +40,21 @@ const noteDetail = {
         }
     },
     methods: {
+        debounceAutoSave() {
+            if (!this.dirty) return;
+
+            // TODO: Cancel timeout when save warning dialog appears (or remove dialog entirely)
+            if (this.timeout) {
+                clearTimeout(this.timeout);
+                this.timeout = null;
+            }
+
+            var that = this;
+            this.timeout = setTimeout(function() { if (that.dirty) that.saveNote(); }, 2000);
+        },
         fetchOrCreateNote() {
+            clearTimeout(this.timeout);
+            this.timeout = null;
             if (this.note_id) this.fetchNote(); else this.createNote();
         },
         createNote() {
