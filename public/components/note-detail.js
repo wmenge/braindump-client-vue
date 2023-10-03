@@ -67,6 +67,9 @@ const noteDetail = {
             }
         },
         prepareNote(data) {
+            // Prevents deletion of edits done during a save
+            if (this.dirty) return;
+
             // Bad hack: backend insists on saving <br> has <br />, while 
             // trix editor insists on saving <br /> as <br>. 
             // This disagreement causes problems in the dirty check
