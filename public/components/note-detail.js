@@ -1,20 +1,25 @@
 import { noteResource } from '../helpers/entityResource.js'
-import { EventBus } from '../app/event-bus.js';
 import { confirm } from '../components/confirmation-modal.js';
-import { notificationHelper } from './notification-list.js'
+import { confirm as confirmUnsavedChanges, UnsavedChangesConfirmationResult } from '../components/confirm-unsaved-changes.js';
+
+
+function equalsIgnoreEmpty(a, b) {
+    if (a == null || b == null) return true;
+    return a.replace('&nbsp;', '') == b.replace('&nbsp;', '') || (!a && !b);
+}
 
 const noteDetail = {
     timeout: null,
     props: ['notebook_id', 'note_id'],
     data() {
         return {
-            note: null,
+            note: { title: null, content: null },
+            refNote: { title: null, content: null }
         }
     },
     created () {
         // fetch the data when the view is created and the data is
         // already being observed
-``
         this.fetchOrCreateNote();
     },
     watch: {
@@ -35,8 +40,16 @@ const noteDetail = {
         newUrl() {
             return `/notebooks/${this.$route.params.notebook_id}/notes/new${queryString(this.$route.query)}`;
         },
+        new() {
+            return !this.note.id && this.note.title;
+        },
+        modified() {
+            return (!(equalsIgnoreEmpty(this.note.title, this.refNote.title) && equalsIgnoreEmpty(this.note.content, this.refNote.content)));
+        },
         dirty() {
-            return this.$root.dirty;
+            console.log("dirty()");
+            console.log(this.new || this.modified);
+            return this.new || this.modified;
         }
     },
     methods: {
@@ -58,18 +71,13 @@ const noteDetail = {
             if (this.note_id) this.fetchNote(); else this.createNote();
         },
         createNote() {
-            this.note = noteResource.createNew(this.notebook_id);
-            // bind data to root controller so we can do a dirty check in the router
-            this.$root.setNote(this.note);
-
+            this.prepareNote(noteResource.createNew(this.notebook_id));
+            
             if (this.$refs.trix) {
                 this.$refs.trix.editor.loadHTML(this.note.content);
             }
         },
         prepareNote(data) {
-            // Prevents deletion of edits done during a save
-            if (this.dirty) return;
-
             // Bad hack: backend insists on saving <br> has <br />, while 
             // trix editor insists on saving <br /> as <br>. 
             // This disagreement causes problems in the dirty check
@@ -77,7 +85,9 @@ const noteDetail = {
             // (TODO: Move to resource, or some filter or perhaps in filter in backend)
             data.content = data.content.replaceAll("<br />", "<br>");
 
+            console.log("prepareNote");
             this.note = data;
+            this.refNote = {...data};
             
             if (this.$refs.trix) {
                 var originalPosition = this.$refs.trix.editor.getPosition();
@@ -85,9 +95,6 @@ const noteDetail = {
                 // retain cursor position
                 this.$refs.trix.editor.setSelectedRange(originalPosition);
             }
-
-            // bind data to root controller so we can do a dirty check in the router
-            this.$root.setNote(data);
         },
         fetchNote() {
             noteResource.get(this.note_id).then(data => this.prepareNote(data));
@@ -109,7 +116,47 @@ const noteDetail = {
                 e.preventDefault(); // present "Save Page" from getting triggered.
                 if (this.dirty) this.saveNote();
             }
+        },
+        confirmOrSave(next) {
+            clearTimeout(this.timeout)
+
+            // If note contains unsaved changes, ask to save
+            if (this.dirty) {
+                confirmUnsavedChanges("There are unsaved changes").then(
+                    // resolved
+                    (result) => {
+
+                        switch (result) {
+                            case UnsavedChangesConfirmationResult.DISCARD:
+                            next();
+                            break;
+                            
+                            
+                            case UnsavedChangesConfirmationResult.SAVE:
+                            noteResource.save(this.note).then(data => {
+                                next();    
+                            })
+                            break;
+
+                            default:
+
+                        }
+                    },
+                    // rejected
+                    () => {
+                        next();
+                    }
+                );
+            } else {
+                next();    
+            }
         }
+    },
+    beforeRouteUpdate (to, from, next) {
+        this.confirmOrSave(next)
+    },
+    beforeRouteLeave (to, from, next) {
+        this.confirmOrSave(next)
     },
     template: 
         `<div v-if="note" class="card" id="note">

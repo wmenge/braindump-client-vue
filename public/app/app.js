@@ -10,6 +10,7 @@ import navigationBar from '../components/navigation-bar.js';
 import createNotebookModal from '../components/create-notebook-modal.js';
 import settingsModal from '../components/settings-modal.js';
 import { confirmationModalComponent } from '../components/confirmation-modal.js';
+import { confirmationModalComponent as confirmationUnsavedChangesModalComponent } from '../components/confirm-unsaved-changes.js';
 import router from './router.js';
 
 Vue.component('notebook-list', notebookList);
@@ -21,40 +22,13 @@ Vue.component('notification-list', notificationList);
 Vue.component('create-notebook-modal', createNotebookModal);
 Vue.component('settings-modal', settingsModal);
 Vue.component('confirmation-modal', confirmationModalComponent);
-
-function equalsIgnoreEmpty(a, b) {
-    if (a == null || b == null) return true;
-    return a.replace('&nbsp;', '') == b.replace('&nbsp;', '') || (!a && !b);
-}
+Vue.component('confirmation-modal-unsaved-changes', confirmationUnsavedChangesModalComponent);
 
 // App
 let app = new Vue({
     data: {
         // still needed? 
-        notebook: { title: '' },
-        note: { title: null, content: null },
-        refNote: { title: null, content: null },
-    },
-    computed: {
-        new() {
-            return !this.note.id && this.note.title;
-        },
-        modified() {
-            return (!(equalsIgnoreEmpty(this.note.title, this.refNote.title) && equalsIgnoreEmpty(this.note.content, this.refNote.content)));
-        },
-        dirty() {
-            return this.new || this.modified;
-        }
-    },
-    methods: {
-        setNote(data) {
-            this.note = data;
-            this.refNote = {...data};
-        },
-        clean() {
-            this.note = { title: null, content: null };
-            this.refNote = { title: null, content: null };
-        }
+        notebook: { title: '' }
     },
     router: router,
     el: '#app'

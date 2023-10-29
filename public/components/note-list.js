@@ -16,9 +16,6 @@ var NoteList = {
     
         EventBus.$on('note-created', newNote => {
             this.notes.push({ ...newNote});
-            // workaround. root gets synced by note-detail normally, but this event
-            // gets fired before the save promise is resolved
-            this.$root.setNote(newNote);
             this.$router.push(''+newNote.id);
         });
 
