@@ -8,13 +8,18 @@ function equalsIgnoreEmpty(a, b) {
     return a.replace('&nbsp;', '') == b.replace('&nbsp;', '') || (!a && !b);
 }
 
+function notesAreEqual(a, b) {
+    return (equalsIgnoreEmpty(a.title, b.title) && equalsIgnoreEmpty(a.content, b.content));
+}
+
 const noteDetail = {
     timeout: null,
     props: ['notebook_id', 'note_id'],
     data() {
         return {
             note: { title: null, content: null },
-            refNote: { title: null, content: null }
+            refNote: { title: null, content: null },
+            refNoteOfferedToSave: { title: null, content: null }
         }
     },
     created () {
@@ -44,11 +49,10 @@ const noteDetail = {
             return !this.note.id && this.note.title;
         },
         modified() {
-            return (!(equalsIgnoreEmpty(this.note.title, this.refNote.title) && equalsIgnoreEmpty(this.note.content, this.refNote.content)));
+            return !notesAreEqual(this.note, this.refNote);
         },
         dirty() {
-            console.log("dirty()");
-            console.log(this.new || this.modified);
+            console.log("dirty(): " + (this.new || this.modified));
             return this.new || this.modified;
         }
     },
@@ -78,6 +82,13 @@ const noteDetail = {
             }
         },
         prepareNote(data) {
+            // Check if user has edited during save, in that case, do not
+            // refresh note w/ version from server
+            if (!notesAreEqual(this.note, this.refNoteOfferedToSave)) {
+                this.refNote = {...this.refNoteOfferedToSave};
+                return;
+            }
+
             // Bad hack: backend insists on saving <br> has <br />, while 
             // trix editor insists on saving <br /> as <br>. 
             // This disagreement causes problems in the dirty check
@@ -88,6 +99,7 @@ const noteDetail = {
             console.log("prepareNote");
             this.note = data;
             this.refNote = {...data};
+            this.refNoteOfferedToSave = {...data};
             
             if (this.$refs.trix) {
                 var originalPosition = this.$refs.trix.editor.getPosition();
@@ -103,7 +115,12 @@ const noteDetail = {
             this.note.content = document.getElementById('hiddenContent').value;
         },
         saveNote() {
-            noteResource.save(this.note).then(data => this.prepareNote(data));
+            console.log("saving");
+            this.refNoteOfferedToSave = {...this.note};
+            noteResource.save(this.note).then(data => {
+                console.log("saved");
+                this.prepareNote(data)
+            });
         },
         deleteNote() {
             confirm("Are you sure you want to delete this note?").then(
