@@ -1,11 +1,11 @@
 import { noteResource } from '../helpers/entityResource.js'
 import { confirm } from '../components/confirmation-modal.js';
 import { confirm as confirmUnsavedChanges, UnsavedChangesConfirmationResult } from '../components/confirm-unsaved-changes.js';
-
+import { EventBus } from '../app/event-bus.js';
 
 function equalsIgnoreEmpty(a, b) {
     if (a == null || b == null) return true;
-    return a.replace('&nbsp;', '') == b.replace('&nbsp;', '') || (!a && !b);
+    return String(a).replace('&nbsp;', '') == String(b).replace('&nbsp;', '') || (!a && !b);
 }
 
 function notesAreEqual(a, b) {
@@ -19,13 +19,19 @@ const noteDetail = {
         return {
             note: { title: null, content: null },
             refNote: { title: null, content: null },
-            refNoteOfferedToSave: { title: null, content: null }
+            refNoteOfferedToSave: { title: null, content: null },
         }
     },
     created () {
         // fetch the data when the view is created and the data is
         // already being observed
         this.fetchOrCreateNote();
+
+        EventBus.$on('note-created', newNote => {
+            if (!this.note.id) this.note.id = newNote.id;
+            this.refNote = {...newNote}
+            this.$router.push(''+newNote.id);
+        });
     },
     watch: {
         'note_id': 'fetchOrCreateNote',
@@ -45,18 +51,27 @@ const noteDetail = {
         newUrl() {
             return `/notebooks/${this.$route.params.notebook_id}/notes/new${queryString(this.$route.query)}`;
         },
-        new() {
-            return !this.note.id && this.note.title;
-        },
-        modified() {
-            return !notesAreEqual(this.note, this.refNote);
-        },
         dirty() {
-            console.log("dirty(): " + (this.new || this.modified));
-            return this.new || this.modified;
+            var result = this.new() || this.modified();
+            return result;
+        },
+        isValid() {
+            return this.note.title != null;
         }
     },
     methods: {
+        new() {
+            var result = this.note.id === undefined && this.note.title != null;
+            return (result);// && (this.note.title != null);
+        },
+        modified() {
+            var result = !notesAreEqual(this.note, this.refNote);
+            return result;
+        },
+        canLeave() {
+            var result = !(this.new() || this.modified());
+            return result;
+        },
         debounceAutoSave() {
             if (!this.dirty) return;
 
@@ -134,11 +149,11 @@ const noteDetail = {
                 if (this.dirty) this.saveNote();
             }
         },
-        confirmOrSave(next) {
+        confirmOrSave(to, from, next) {
             clearTimeout(this.timeout)
 
             // If note contains unsaved changes, ask to save
-            if (this.dirty) {
+            if (!this.canLeave()) {
                 confirmUnsavedChanges("There are unsaved changes").then(
                     // resolved
                     (result) => {
@@ -170,10 +185,10 @@ const noteDetail = {
         }
     },
     beforeRouteUpdate (to, from, next) {
-        this.confirmOrSave(next)
+        this.confirmOrSave(to, from, next)
     },
     beforeRouteLeave (to, from, next) {
-        this.confirmOrSave(next)
+        this.confirmOrSave(to, from, next)
     },
     template: 
         `<div v-if="note" class="card" id="note">

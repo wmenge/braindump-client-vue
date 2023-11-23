@@ -16,7 +16,6 @@ var NoteList = {
     
         EventBus.$on('note-created', newNote => {
             this.notes.push({ ...newNote});
-            this.$router.push(''+newNote.id);
         });
 
         EventBus.$on('note-updated', updatedNote => {
