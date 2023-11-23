@@ -102,7 +102,7 @@ const noteDetail = {
             this.refNoteOfferedToSave = {...data};
             
             if (this.$refs.trix) {
-                var originalPosition = this.$refs.trix.editor.getPosition();
+                var originalPosition = this.$refs.trix.editor.getSelectedRange();
                 this.$refs.trix.editor.loadHTML(this.note.content);
                 // retain cursor position
                 this.$refs.trix.editor.setSelectedRange(originalPosition);
