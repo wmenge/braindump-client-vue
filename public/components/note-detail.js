@@ -5,7 +5,7 @@ import { EventBus } from '../app/event-bus.js';
 
 function equalsIgnoreEmpty(a, b) {
     if (a == null || b == null) return true;
-    return String(a).replace('&nbsp;', '') == String(b).replace('&nbsp;', '') || (!a && !b);
+    return String(a).replaceAll('&nbsp;', ' ') == String(b).replaceAll('&nbsp;', ' ') || (!a && !b);
 }
 
 function notesAreEqual(a, b) {
@@ -42,10 +42,14 @@ const noteDetail = {
     mounted: function() {
         document.addEventListener("trix-change", this.setBody);
         document.addEventListener('keydown', this.keyListener);
+        document.addEventListener("trix-attachment-add", function(event) {
+            e.preventDefault();
+          })
     },
     beforeDestroy() {
         document.removeEventListener("trix-change", this.setBody);
         document.removeEventListener('keydown', this.keyListener);
+        document.removeEventListener('trix-attachment-add', this.keyListener);
     },
     computed: {
         newUrl() {
@@ -112,9 +116,11 @@ const noteDetail = {
             data.content = data.content.replaceAll("<br />", "<br>");
 
             console.log("prepareNote");
-            this.note = data;
             this.refNote = {...data};
             this.refNoteOfferedToSave = {...data};
+
+            // triggers vue watch
+            this.note = data;
             
             if (this.$refs.trix) {
                 var originalPosition = this.$refs.trix.editor.getSelectedRange();
