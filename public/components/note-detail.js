@@ -108,13 +108,6 @@ const noteDetail = {
                 return;
             }
 
-            // Bad hack: backend insists on saving <br> has <br />, while 
-            // trix editor insists on saving <br /> as <br>. 
-            // This disagreement causes problems in the dirty check
-            // prevent this by modifying data.content
-            // (TODO: Move to resource, or some filter or perhaps in filter in backend)
-            data.content = data.content.replaceAll("<br />", "<br>");
-
             console.log("prepareNote");
             this.refNote = {...data};
             this.refNoteOfferedToSave = {...data};
@@ -125,6 +118,14 @@ const noteDetail = {
             if (this.$refs.trix) {
                 var originalPosition = this.$refs.trix.editor.getSelectedRange();
                 this.$refs.trix.editor.loadHTML(this.note.content);
+
+                // Use trix's serialization as reference, so api/trix html
+                // differences (e.g. <br /> vs <br>) don't count as edits
+                const normalized = this.$refs.trix.value;
+                this.refNote.content = normalized;
+                this.refNoteOfferedToSave.content = normalized;
+                this.note.content = normalized;
+
                 // retain cursor position
                 this.$refs.trix.editor.setSelectedRange(originalPosition);
             }
